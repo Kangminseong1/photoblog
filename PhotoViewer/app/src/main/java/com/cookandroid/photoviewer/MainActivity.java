@@ -54,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private class CloudImage extends AsyncTask<String, Integer, List<Bitmap>> {
+    private class CloudImage extends AsyncTask<String, Integer, List<PostItem>> {
         @Override
-        protected List<Bitmap> doInBackground(String... urls) {
-            List<Bitmap> bitmapList = new ArrayList<>();
+        protected List<PostItem> doInBackground(String... urls) {
+            List<PostItem> postList = new ArrayList<>();
             try {
                 String apiUrl = urls[0];
                 String token = "bf46b8f9337d1d27b4ef2511514c798be1a954b8";
@@ -93,7 +93,12 @@ public class MainActivity extends AppCompatActivity {
                             InputStream imgStream = imgConn.getInputStream();
                             Bitmap imageBitmap = BitmapFactory.decodeStream(imgStream);
                             if (imageBitmap != null) {
-                                bitmapList.add(imageBitmap);
+                                String title = post_json.getString("title");
+                                String date = post_json.isNull("published_date")
+                                        ? post_json.getString("created_date")
+                                        : post_json.getString("published_date");
+                                date = date.substring(0, 16).replace("T", " ");
+                                postList.add(new PostItem(title, date, imageBitmap));
                             }
                             imgStream.close();
                             imgConn.disconnect();
@@ -103,17 +108,17 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
-            return bitmapList;
+            return postList;
         }
 
         @Override
-        protected void onPostExecute(List<Bitmap> images) {
-            if (images.isEmpty()) {
+        protected void onPostExecute(List<PostItem> posts) {
+            if (posts.isEmpty()) {
                 textView.setText("불러올 이미지가 없습니다.");
             } else {
                 textView.setText("이미지 로드 성공!");
                 RecyclerView recyclerView = findViewById(R.id.recyclerView);
-                ImageAdapter adapter = new ImageAdapter(images);
+                ImageAdapter adapter = new ImageAdapter(posts);
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                 recyclerView.setAdapter(adapter);
             }

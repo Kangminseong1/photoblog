@@ -9,4 +9,17 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:scaleType="centerCrop" />
+    <TextView
+        android:id="@+id/textTitleItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/textDateItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="?android:attr/textColorSecondary" />
 </LinearLayout>
