@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     TextView textView;
+    EditText searchText;
+    List<PostItem> allPosts = new ArrayList<>();
     String site_url = "https://alstjde241.pythonanywhere.com";
     CloudImage taskDownload;
 
@@ -47,6 +50,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = (TextView) findViewById(R.id.textView);
+        searchText = findViewById(R.id.searchText);
+    }
+
+    public void onClickSearch(View v) {
+        showPosts();
+    }
+
+    private void showPosts() {
+        String query = searchText.getText().toString().toLowerCase();
+        List<PostItem> filtered = new ArrayList<>();
+        for (PostItem post : allPosts) {
+            if (post.title.toLowerCase().contains(query)) {
+                filtered.add(post);
+            }
+        }
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        ImageAdapter adapter = new ImageAdapter(filtered, post -> {
+            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+            intent.putExtra("id", post.id);
+            intent.putExtra("title", post.title);
+            intent.putExtra("text", post.text);
+            intent.putExtra("date", post.date);
+            intent.putExtra("imageUrl", post.imageUrl);
+            openDetail.launch(intent);
+        });
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        recyclerView.setAdapter(adapter);
     }
 
     public void onClickDownload(View v) {
@@ -127,18 +157,8 @@ public class MainActivity extends AppCompatActivity {
                 textView.setText("불러올 이미지가 없습니다.");
             } else {
                 textView.setText("이미지 로드 성공!");
-                RecyclerView recyclerView = findViewById(R.id.recyclerView);
-                ImageAdapter adapter = new ImageAdapter(posts, post -> {
-                    Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                    intent.putExtra("id", post.id);
-                    intent.putExtra("title", post.title);
-                    intent.putExtra("text", post.text);
-                    intent.putExtra("date", post.date);
-                    intent.putExtra("imageUrl", post.imageUrl);
-                    openDetail.launch(intent);
-                });
-                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                recyclerView.setAdapter(adapter);
+                allPosts = posts;
+                showPosts();
             }
         }
     }

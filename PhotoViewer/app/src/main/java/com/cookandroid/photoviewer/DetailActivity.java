@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,16 +24,27 @@ public class DetailActivity extends AppCompatActivity {
 
     String site_url = "https://alstjde241.pythonanywhere.com";
     ImageView imageDetail;
+    TextView titleView;
+    TextView bodyView;
     int postId;
+
+    ActivityResultLauncher<Intent> openEdit =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    titleView.setText(result.getData().getStringExtra("title"));
+                    bodyView.setText(result.getData().getStringExtra("text"));
+                    setResult(RESULT_OK);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         imageDetail = findViewById(R.id.imageDetail);
-        TextView titleView = findViewById(R.id.textDetailTitle);
+        titleView = findViewById(R.id.textDetailTitle);
         TextView dateView = findViewById(R.id.textDetailDate);
-        TextView bodyView = findViewById(R.id.textDetailBody);
+        bodyView = findViewById(R.id.textDetailBody);
 
         Intent intent = getIntent();
         postId = intent.getIntExtra("id", -1);
@@ -39,6 +52,14 @@ public class DetailActivity extends AppCompatActivity {
         dateView.setText(intent.getStringExtra("date"));
         bodyView.setText(intent.getStringExtra("text"));
         new LoadImage().execute(intent.getStringExtra("imageUrl"));
+    }
+
+    public void onClickEdit(View v) {
+        Intent intent = new Intent(this, EditActivity.class);
+        intent.putExtra("id", postId);
+        intent.putExtra("title", titleView.getText().toString());
+        intent.putExtra("text", bodyView.getText().toString());
+        openEdit.launch(intent);
     }
 
     public void onClickDelete(View v) {
