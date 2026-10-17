@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +34,13 @@ public class MainActivity extends AppCompatActivity {
     TextView textView;
     String site_url = "https://alstjde241.pythonanywhere.com";
     CloudImage taskDownload;
+
+    ActivityResultLauncher<Intent> openDetail =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    onClickDownload(null);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                                         ? post_json.getString("created_date")
                                         : post_json.getString("published_date");
                                 date = date.substring(0, 16).replace("T", " ");
-                                postList.add(new PostItem(title, text, date, imageUrl, imageBitmap));
+                                postList.add(new PostItem(post_json.getInt("id"), title, text, date, imageUrl, imageBitmap));
                             }
                             imgStream.close();
                             imgConn.disconnect();
@@ -121,11 +130,12 @@ public class MainActivity extends AppCompatActivity {
                 RecyclerView recyclerView = findViewById(R.id.recyclerView);
                 ImageAdapter adapter = new ImageAdapter(posts, post -> {
                     Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                    intent.putExtra("id", post.id);
                     intent.putExtra("title", post.title);
                     intent.putExtra("text", post.text);
                     intent.putExtra("date", post.date);
                     intent.putExtra("imageUrl", post.imageUrl);
-                    startActivity(intent);
+                    openDetail.launch(intent);
                 });
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                 recyclerView.setAdapter(adapter);

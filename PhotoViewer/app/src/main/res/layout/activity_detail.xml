@@ -37,5 +37,13 @@
             android:layout_height="wrap_content"
             android:paddingTop="12dp"
             android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:onClick="onClickDelete"
+            android:text="삭제" />
     </LinearLayout>
 </ScrollView>
