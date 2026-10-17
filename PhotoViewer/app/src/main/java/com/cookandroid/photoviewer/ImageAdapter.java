@@ -13,9 +13,15 @@ import java.util.List;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
     private List<PostItem> postList;
+    private OnPostClickListener listener;
 
-    public ImageAdapter(List<PostItem> postList) {
+    public interface OnPostClickListener {
+        void onPostClick(PostItem post);
+    }
+
+    public ImageAdapter(List<PostItem> postList, OnPostClickListener listener) {
         this.postList = postList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -31,6 +37,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         holder.imageView.setImageBitmap(post.image);
         holder.titleView.setText(post.title);
         holder.dateView.setText(post.date);
+        holder.itemView.setOnClickListener(v -> listener.onPostClick(post));
     }
 
     @Override

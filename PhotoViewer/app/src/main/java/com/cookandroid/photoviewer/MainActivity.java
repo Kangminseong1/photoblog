@@ -94,11 +94,12 @@ public class MainActivity extends AppCompatActivity {
                             Bitmap imageBitmap = BitmapFactory.decodeStream(imgStream);
                             if (imageBitmap != null) {
                                 String title = post_json.getString("title");
+                                String text = post_json.getString("text");
                                 String date = post_json.isNull("published_date")
                                         ? post_json.getString("created_date")
                                         : post_json.getString("published_date");
                                 date = date.substring(0, 16).replace("T", " ");
-                                postList.add(new PostItem(title, date, imageBitmap));
+                                postList.add(new PostItem(title, text, date, imageUrl, imageBitmap));
                             }
                             imgStream.close();
                             imgConn.disconnect();
@@ -118,7 +119,14 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 textView.setText("이미지 로드 성공!");
                 RecyclerView recyclerView = findViewById(R.id.recyclerView);
-                ImageAdapter adapter = new ImageAdapter(posts);
+                ImageAdapter adapter = new ImageAdapter(posts, post -> {
+                    Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                    intent.putExtra("title", post.title);
+                    intent.putExtra("text", post.text);
+                    intent.putExtra("date", post.date);
+                    intent.putExtra("imageUrl", post.imageUrl);
+                    startActivity(intent);
+                });
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                 recyclerView.setAdapter(adapter);
             }
