@@ -23,7 +23,7 @@ import java.time.OffsetDateTime;
 
 public class PostActivity extends AppCompatActivity {
 
-    String site_url = "http://10.0.2.2:8000";
+    String site_url = "https://alstjde241.pythonanywhere.com";
     EditText editTitle;
     EditText editText;
     ImageView imagePreview;
