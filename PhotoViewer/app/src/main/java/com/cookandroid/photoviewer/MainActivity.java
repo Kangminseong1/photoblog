@@ -1,5 +1,6 @@
 package com.cookandroid.photoviewer;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -31,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     TextView textView;
     String site_url = "http://10.0.2.2:8000";
     CloudImage taskDownload;
-    //PutPost taskUpload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickUpload(View v) {
-        //...여기에 코드 추가...
-        Toast.makeText(getApplicationContext(), "Upload", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, PostActivity.class);
+        startActivity(intent);
     }
 
     private class CloudImage extends AsyncTask<String, Integer, List<Bitmap>> {
@@ -80,12 +80,10 @@ public class MainActivity extends AppCompatActivity {
                     conn.disconnect();
                     String strJson = result.toString();
                     JSONArray aryJson = new JSONArray(strJson);
-                    // 배열 내 모든 이미지 다운로드
                     for (int i = 0; i < aryJson.length(); i++) {
                         JSONObject post_json = (JSONObject) aryJson.get(i);
                         String imageUrl = post_json.getString("image");
                         if (!imageUrl.equals("")) {
-                            // 에뮬레이터에서는 127.0.0.1/localhost 대신 10.0.2.2로 접근
                             imageUrl = imageUrl.replace("127.0.0.1", "10.0.2.2")
                                     .replace("localhost", "10.0.2.2");
                             URL myImageUrl = new URL(imageUrl);
@@ -95,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream imgStream = imgConn.getInputStream();
                             Bitmap imageBitmap = BitmapFactory.decodeStream(imgStream);
                             if (imageBitmap != null) {
-                                bitmapList.add(imageBitmap); // 이미지 리스트에 추가
+                                bitmapList.add(imageBitmap);
                             }
                             imgStream.close();
                             imgConn.disconnect();

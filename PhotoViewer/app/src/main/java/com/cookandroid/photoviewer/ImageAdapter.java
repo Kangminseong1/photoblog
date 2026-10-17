@@ -14,14 +14,13 @@ import java.util.List;
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
     private List<Bitmap> imageList;
 
-    public ImageAdapter(List<Bitmap> imageList) {// 생성자에서 이미지 목록 입력
+    public ImageAdapter(List<Bitmap> imageList) {
         this.imageList = imageList;
     }
 
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // 이미지 항목을 나타낼 뷰 생성
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_image, parent, false);
         return new ImageViewHolder(view);
     }
